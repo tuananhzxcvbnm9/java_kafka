@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: oms
+  datasource:
+    url: jdbc:postgresql://localhost:5432/oms
+    username: oms
+    password: oms
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        isolation.level: read_committed
+    producer:
+      acks: all
+      retries: 10
+      properties:
+        enable.idempotence: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+app:
+  outbox:
+    publish-interval-ms: 1000
