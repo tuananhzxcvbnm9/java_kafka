@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Order {
@@ -15,17 +16,23 @@ public class Order {
     private final BigDecimal totalAmount;
 
     public Order(UUID id, UUID customerId, List<OrderItem> orderItems, Instant createdAt) {
+        this.id = Objects.requireNonNull(id, "Order id must not be null");
+        this.customerId = Objects.requireNonNull(customerId, "Customer id must not be null");
+        this.createdAt = Objects.requireNonNull(createdAt, "Created time must not be null");
+
         if (orderItems == null || orderItems.isEmpty()) {
             throw new IllegalArgumentException("Order must contain at least one item");
         }
-        this.id = id;
-        this.customerId = customerId;
-        this.items.addAll(orderItems);
-        this.createdAt = createdAt;
+        for (OrderItem orderItem : orderItems) {
+            this.items.add(Objects.requireNonNull(orderItem, "Order item must not be null"));
+        }
         this.status = OrderStatus.CREATED;
-        this.totalAmount = items.stream()
-                .map(i -> i.price().multiply(BigDecimal.valueOf(i.quantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal amount = BigDecimal.ZERO;
+        for (OrderItem item : this.items) {
+            amount = amount.add(item.price().multiply(BigDecimal.valueOf(item.quantity())));
+        }
+        this.totalAmount = amount;
     }
 
     public UUID id() { return id; }

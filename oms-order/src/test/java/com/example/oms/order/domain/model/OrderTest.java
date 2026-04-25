@@ -28,4 +28,24 @@ class OrderTest {
 
         assertEquals(new BigDecimal("20.00"), order.totalAmount());
     }
+
+    @Test
+    void shouldRejectNullItem() {
+        assertThrows(NullPointerException.class,
+                () -> new Order(
+                        UUID.randomUUID(),
+                        UUID.randomUUID(),
+                        List.of((OrderItem) null),
+                        Instant.now()));
+    }
+
+    @Test
+    void shouldRejectInvalidOrderItem() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new OrderItem(" ", 1, new BigDecimal("10.00")));
+        assertThrows(IllegalArgumentException.class,
+                () -> new OrderItem("SKU-1", 0, new BigDecimal("10.00")));
+        assertThrows(IllegalArgumentException.class,
+                () -> new OrderItem("SKU-1", 1, BigDecimal.ZERO));
+    }
 }
