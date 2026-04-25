@@ -27,6 +27,9 @@ public class OrderController {
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<OrderResponse> placeOrder(@Valid @RequestBody PlaceOrderRequest request) {
         UUID id = placeOrderUseCase.execute(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new OrderResponse(id, "CREATED", BigDecimal.ZERO));
+        BigDecimal totalAmount = request.items().stream()
+                .map(item -> item.price().multiply(BigDecimal.valueOf(item.quantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new OrderResponse(id, "CREATED", totalAmount));
     }
 }
