@@ -9,5 +9,5 @@ import java.util.UUID;
 
 public record PlaceOrderRequest(
         @NotNull UUID customerId,
-        @NotEmpty List<@Valid PlaceOrderItemRequest> items
+        @NotEmpty List<@NotNull @Valid PlaceOrderItemRequest> items
 ) {}
